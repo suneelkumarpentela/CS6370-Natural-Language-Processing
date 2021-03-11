@@ -23,8 +23,11 @@ class Tokenization():
 			A list of lists where each sub-list is a sequence of tokens
 		"""
 
-		tokenizedText = None
-		###tokenizedText = text.strip().split(" ")
+
+		for sentence in text:
+			tokens = text.strip().split(" ")
+			tokens = [i for i in tokens if( (i.strip() != ".") and (i.strip() != ",") )]
+			tokenizedText.append(tokens)
 
 		#Fill in code here
 
@@ -53,7 +56,9 @@ class Tokenization():
 
 		for sentence in text:
 			tokens = tokenizer.tokenize(sentence.strip())
+			tokens = [i for i in tokens if( (i.strip() != ".") and (i.strip() != ",") )]
 			tokenizedText.append(tokens)
+			
 
 		#Fill in code here
 

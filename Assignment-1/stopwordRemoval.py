@@ -1,7 +1,8 @@
 from util import *
 
 # Add your import statements here
-
+import nltk
+from nltk.corpus import stopwords
 
 
 
@@ -23,11 +24,18 @@ class StopwordRemoval():
 			A list of lists where each sub-list is a sequence of tokens
 			representing a sentence with stopwords removed
 		"""
-
-		stopwordRemovedText = None
-
+		
+		stopwordRemovedText = []
+		stop_words = set(stopwords.words('english'))
+		
 		#Fill in code here
-
+		for i in range(len(text)):
+			word_tokens = text[i]
+			filtered_sentence = []
+			for w in word_tokens:
+				if w not in stop_words:
+					filtered_sentence.append(w)
+			stopwordRemovedText.append(filtered_sentence)
 		return stopwordRemovedText
 
 

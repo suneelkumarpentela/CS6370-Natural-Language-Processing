@@ -25,7 +25,9 @@ class SentenceSegmentation():
 			A list of strings where each string is a single sentence
 		"""
 
-		segmentedText = re.split(' .',text)
+		text = text.replace('?','.')
+		text = text.replace('!','.')
+		segmentedText = text.strip().split('.')
 
 		#Fill in code here
 
