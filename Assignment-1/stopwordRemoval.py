@@ -1,10 +1,7 @@
 from util import *
 
-# Add your import statements here
 import nltk
 from nltk.corpus import stopwords
-
-
 
 class StopwordRemoval():
 
@@ -28,7 +25,6 @@ class StopwordRemoval():
 		stopwordRemovedText = []
 		stop_words = set(stopwords.words('english'))
 		
-		#Fill in code here
 		for i in range(len(text)):
 			word_tokens = text[i]
 			filtered_sentence = []
