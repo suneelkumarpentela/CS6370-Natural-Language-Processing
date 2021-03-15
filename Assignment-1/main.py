@@ -137,7 +137,7 @@ class SearchEngine:
 		queries_json = json.load(open(args.dataset + "cran_queries.json", 'r'))[:]
 		queries = [item["query"] for item in queries_json]
 		# Process queries 
-		######processedQueries = self.preprocessQueries(queries)
+		processedQueries = self.preprocessQueries(queries)
 
 		# Read documents
 		docs_json = json.load(open(args.dataset + "cran_docs.json", 'r'))[:][:4]

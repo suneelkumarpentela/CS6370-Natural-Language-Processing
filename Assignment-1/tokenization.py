@@ -1,6 +1,5 @@
 from util import *
 
-# Add your import statements here
 from nltk.tokenize import TreebankWordTokenizer
 
 
@@ -22,14 +21,12 @@ class Tokenization():
 		list
 			A list of lists where each sub-list is a sequence of tokens
 		"""
-
+		tokenizedText = []
 
 		for sentence in text:
-			tokens = text.strip().split(" ")
+			tokens = sentence.strip().split(" ")
 			tokens = [i for i in tokens if( (i.strip() != ".") and (i.strip() != ",") )]
 			tokenizedText.append(tokens)
-
-		#Fill in code here
 
 		return tokenizedText
 
@@ -59,7 +56,5 @@ class Tokenization():
 			tokens = [i for i in tokens if( (i.strip() != ".") and (i.strip() != ",") )]
 			tokenizedText.append(tokens)
 			
-
-		#Fill in code here
 
 		return tokenizedText

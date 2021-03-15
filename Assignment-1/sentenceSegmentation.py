@@ -4,7 +4,7 @@ from util import *
 import re
 import nltk
 import nltk.data
-#from nltk.tokenize import PunktSentenceTokenizer
+from nltk.tokenize import PunktSentenceTokenizer
 
 
 
@@ -25,11 +25,7 @@ class SentenceSegmentation():
 			A list of strings where each string is a single sentence
 		"""
 
-		text = text.replace('?','.')
-		text = text.replace('!','.')
-		segmentedText = text.strip().split('.')
-
-		#Fill in code here
+		segmentedText = re.split("\\?|\\.|\\!",text.strip())
 
 		return segmentedText
 
@@ -51,9 +47,7 @@ class SentenceSegmentation():
 		list
 			A list of strings where each strin is a single sentence
 		"""
-		sent_detector = nltk.data.load("tokenizers/punkt/english.pickle")
-		segmentedText = sent_detector.tokenize(text.strip())
-
-		#Fill in code here
+		tokenizer = PunktSentenceTokenizer()
+		segmentedText = tokenizer.tokenize(text.strip())
 		
 		return segmentedText
