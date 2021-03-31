@@ -1,5 +1,5 @@
 from util import *
-
+import math
 # Add your import statements here
 
 
@@ -29,7 +29,36 @@ class InformationRetrieval():
 
 		index = None
 
-		#Fill in code here
+		terms = {}
+		IDF = {}
+		dim = 0
+		for i in range(len(docs)):
+			for sentence in docs[i]:
+				for token in sentence:
+					word = token.lower()
+					if word not in terms.keys():
+						dim+=1
+						terms[word] = dim-1
+						IDF[word] = 0
+					IDF[word] += 2
+
+			for word in IDF.keys():
+				if(IDF[word] > 1):
+					IDF[word] += math.floor(IDF[word]) + 1.0/(len(docs))
+
+
+		basis = [0 for i in range(dim)]
+		TF = [basis for i in range(len(docs)) ]				
+		for i in range(len(docs)):
+			for sentence in docs[i]:
+				for token in sentence:
+					word = token.lower()
+					TF[i][terms[word]] += 1 
+		inv_index = TF
+
+		for i in range(len(docs)):
+			for word in TF[i].keys():
+				inv_index[i][word] *= np.log(len(docs)/IDF[word])
 
 		self.index = index
 
