@@ -4,3 +4,6 @@ cranfield/
 template_code_part1/
 template_code_part2/
 template_code_part2_old/
+../.gitignore
+../.vscode/
+.DS_Store
