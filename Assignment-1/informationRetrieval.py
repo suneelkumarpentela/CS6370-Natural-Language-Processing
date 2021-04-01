@@ -1,4 +1,5 @@
 from util import *
+import numpy as np
 import math
 # Add your import statements here
 
@@ -27,39 +28,57 @@ class InformationRetrieval():
 		None
 		"""
 
-		index = None
+		index = {}
 
-		terms = {}
+		#contains all the distinct terms present in all docs
+		terms = []
+		#dict with terms as keys with their IDF values
 		IDF = {}
-		dim = 0
+
 		for i in range(len(docs)):
 			for sentence in docs[i]:
 				for token in sentence:
 					word = token.lower()
-					if word not in terms.keys():
-						dim+=1
-						terms[word] = dim-1
+					if word not in terms:
+						terms.append(word)
 						IDF[word] = 0
-					IDF[word] += 2
+					# DF is <=1, so adding 2 is used to filter if 
+					# word is present in a particular document. 
+					IDF[word] += 2 
 
-			for word in IDF.keys():
-				if(IDF[word] > 1):
-					IDF[word] += math.floor(IDF[word]) + 1.0/(len(docs))
+			for token in IDF.keys():
+				word = token.lower()
+				if (IDF[word] > 1):
+					IDF[word] += TDF[word] - math.floor(IDF[word]) + 1.0/(len(docs))
 
+		index["terms"] = terms
+		index["docIds"] = docIDs
 
-		basis = [0 for i in range(dim)]
-		TF = [basis for i in range(len(docs)) ]				
-		for i in range(len(docs)):
-			for sentence in docs[i]:
+		dim = len(terms)
+		zero_vector = [0 for i in range(dim)]
+
+		#Each list in TF is a vector representing a doc in terms space.
+		
+		TF = {}
+		for docID in docIDs:
+			TF[docID] = zero_vector	
+
+		for docID,doc in zip(docIDs,docs):
+			for sentence in doc:
 				for token in sentence:
 					word = token.lower()
-					TF[i][terms[word]] += 1 
+					idx = terms.index(word)
+					TF[docID][idx] += 1
+
 		inv_index = TF
 
-		for i in range(len(docs)):
-			for word in TF[i].keys():
-				inv_index[i][word] *= np.log(len(docs)/IDF[word])
+		for docID in docIDs:
+			for idx,word in enumerate(terms): 
 
+				inv_index[docID][idx] *= np.log(1.0/IDF[word])
+
+		index["inv_index"] = inv_index
+		
 		self.index = index
 
 
