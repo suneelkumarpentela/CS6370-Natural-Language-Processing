@@ -79,7 +79,7 @@ class Evaluation():
 		query_count = len(query_ids)
 		query_ids = sorted(query_ids)
 
-		ground_truth_list = ground_truth_non_relevance_metrics(query_rels,query_ids)
+		ground_truth_list = ground_truth_metrics(query_rels,query_ids)
 
 		ground_truth_list = [ [] for i in range(query_count)]
 
@@ -164,7 +164,7 @@ class Evaluation():
 
 		query_count = len(query_ids)
 
-		ground_truth_list = ground_truth_non_relevance_metrics(query_rels,query_ids)
+		ground_truth_list = ground_truth_metrics(query_rels,query_ids)
 
 		for i,query_id in enumerate(query_ids):
 
@@ -236,10 +236,10 @@ class Evaluation():
 		meanFscore = 0
 
 		query_count = len(query_ids)
-		ground_truth_list = [ [] for i in range(query_count)]
+		ground_truth_list = ground_truth_metrics(query_rels,query_ids)
 
 		for i,query_id in range(query_ids):
-			Fscore = queryFscore(doc_IDs_ordered[i], query_id, true_doc_IDs[i], k)
+			Fscore = queryFscore(doc_IDs_ordered[i], query_id, ground_truth_list[i], k)
 			meanFscore += Fscore
 
 		meanFscore = meanFscore/query_count
@@ -272,8 +272,34 @@ class Evaluation():
 
 		nDCG = -1
 
-		#Fill in code here
+		ground_truth_docs = true_doc_IDs[0]
+		ground_truth_relevance = true_doc_IDs[1]
 
+		k_predicted_docs = query_doc_IDs_ordered[:k]
+		ideal_rel_list = []
+
+		#Actual DCG@k
+
+		DCG  = 0
+		for i,doc_ID in enumerate(k_predicted_docs) :
+			if doc in ground_truth_docs:
+				idx = ground_truth_docs.index(doc_ID)
+				rel = ground_truth_relevance[idx]
+				ideal_rel_list.append([rel,i+1])
+				DCG += rel/(np.log2(i+2))
+
+
+		ideal_rel_list = sorted(ideal_rel_list,key = lambda x : x[0])
+		#Ideal DCG@k
+
+		IDCG = 0
+		for i in range(len(ideal_rel_list)):
+			rel = ideal_rel_list[i][0]
+			pos = ideal_rel_list[i][1]
+			IDCG += ( rel/np.log2(pos+1) )
+			
+		nDCG = DCG/IDCG
+		
 		return nDCG
 
 
@@ -302,9 +328,17 @@ class Evaluation():
 			The mean nDCG value as a number between 0 and 1
 		"""
 
-		meanNDCG = -1
+		meanNDCG = 0
 
-		#Fill in code here
+		query_count = len(query_ids)
+
+		ground_truth_list = ground_truth__relevance_metrics(query_rels,query_ids)
+
+		for i,query_id in enumerate(query_ids):
+			NDCG = queryNDCG(doc_IDs_ordered[i], query_id, ground_truth_list[i], k)
+			meanNDCG += NDCG
+
+		meanNDCG = meanNDCG/query_count			
 
 		return meanNDCG
 
@@ -333,10 +367,19 @@ class Evaluation():
 			The average precision value as a number between 0 and 1
 		"""
 
-		avgPrecision = -1
+		avgPrecision = 0
 
-		#Fill in code here
+		doc_count = 0
+		rel_ret_count = 0
 
+		for i in range(k):
+			doc_count += 1
+			
+			if query_doc_IDs_ordered[i] in true_doc_IDs:
+				rel_ret_count += 1
+				avgPrecision += (rel_ret_count/doc_count)
+		avgPrecision = avgPrecision/rel_ret_count
+		
 		return avgPrecision
 
 
@@ -365,9 +408,18 @@ class Evaluation():
 			The MAP value as a number between 0 and 1
 		"""
 
-		meanAveragePrecision = -1
+		meanAveragePrecision = 0
 
-		#Fill in code here
+		query_count = len(query_ids)
+
+		ground_truth_list = ground_truth_metrics(q_rels,query_ids)
+
+		for i,query_id in enumerate(query_ids):
+
+			avgPrecision = queryAveragePrecision(doc_IDs_ordered[i], query_id, ground_truth_list[i], k)
+			meanAveragePrecision += avgPrecision
+
+		meanAveragePrecision = meanAveragePrecision/query_count
 
 		return meanAveragePrecision
 
