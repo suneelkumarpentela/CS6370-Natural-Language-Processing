@@ -1,4 +1,5 @@
- from util import *
+from util import *
+import numpy as np
 
 # Add your import statements here
 
@@ -32,14 +33,6 @@ class Evaluation():
 
 		precision = -1
 		rel_ret_count = 0
-
-		# retrieved_count = len(query_doc_IDs_ordered)
-		
-		# for doc_id in query_doc_IDs_ordered:
-		# 	if doc_id in true_doc_IDs:
-		# 		rel_ret_count += 1
-
-		# precision = retrieved_count/(rel_ret_count)
 
 		for i in range(k):
 			if query_doc_IDs_ordered[i] in true_doc_IDs:
@@ -79,18 +72,21 @@ class Evaluation():
 		query_count = len(query_ids)
 		query_ids = sorted(query_ids)
 
-		ground_truth_list = ground_truth_metrics(query_rels,query_ids)
+		#imported from util.py
+		ground_truth_list = ground_truth_metrics(qrels,query_ids)
 
-		ground_truth_list = [ [] for i in range(query_count)]
+		# ground_truth_list = [ [] for i in range(query_count)]
 
-		for query_info in q_rels:
-			query_val = int(query_info["query_num"])
-			if query_val in query_ids:
-				query_i = query_ids.index(query_val)
-				ground_truth_list[query_i].append(int(query_info["id"]))
+		# for query_info in qrels:
+		# 	query_val = int(query_info["query_num"])
+		# 	if query_val in query_ids: 
+		# 		query_i = query_ids.index(query_val)
+		# 		ground_truth_list[query_i].append(int(query_info["id"]))
 
 		for i,query_id in enumerate(query_ids):
-			precision = queryPrecision(doc_IDs_ordered[i],query_id,ground_truth_list[i],k)
+			if(i==0):
+				print(doc_IDs_ordered[i],"\n\n\n",ground_truth_list[i])
+			precision = self.queryPrecision(doc_IDs_ordered[i],query_id,ground_truth_list[i],k)
 			meanPrecision += precision
 
 		meanPrecision = meanPrecision/query_count
@@ -124,7 +120,9 @@ class Evaluation():
 		recall = -1
 
 		rel_ret_count = 0
-		rel_count = len(true_doc_IDs)
+		rel_count = 1
+		if ( len(true_doc_IDs) > 0 ):
+			rel_count = len(true_doc_IDs)
 
 		for i in range(k):
 			if query_doc_IDs_ordered[i] in true_doc_IDs:
@@ -164,14 +162,16 @@ class Evaluation():
 
 		query_count = len(query_ids)
 
-		ground_truth_list = ground_truth_metrics(query_rels,query_ids)
+		ground_truth_list = ground_truth_metrics(qrels,query_ids)
+
+		#print(ground_truth_list)
 
 		for i,query_id in enumerate(query_ids):
 
-			recall = queryRecall(doc_IDs_ordered[i],query_id,ground_truth_list[i],k)
-			mean_recall += recall
+			recall = self.queryRecall(doc_IDs_ordered[i],query_id,ground_truth_list[i],k)
+			meanRecall += recall
 		
-		mean_recall= mean_recall/query_count
+		meanRecall= meanRecall/query_count
 
 		return meanRecall
 
@@ -203,7 +203,9 @@ class Evaluation():
 
 		precision = self.queryPrecision(query_doc_IDs_ordered, query_id, true_doc_IDs, k)
 		recall  = self.queryRecall(query_doc_IDs_ordered, query_id, true_doc_IDs, k)
-		fscore = (2*precision*recall)/(precision+recall)
+		fscore = 0
+		if ( (precision+recall) > 0):
+			fscore = (2*precision*recall)/(precision+recall)
 
 		return fscore
 
@@ -236,10 +238,10 @@ class Evaluation():
 		meanFscore = 0
 
 		query_count = len(query_ids)
-		ground_truth_list = ground_truth_metrics(query_rels,query_ids)
+		ground_truth_list = ground_truth_metrics(qrels,query_ids)
 
-		for i,query_id in range(query_ids):
-			Fscore = queryFscore(doc_IDs_ordered[i], query_id, ground_truth_list[i], k)
+		for i,query_id in enumerate(query_ids):
+			Fscore = self.queryFscore(doc_IDs_ordered[i], query_id, ground_truth_list[i], k)
 			meanFscore += Fscore
 
 		meanFscore = meanFscore/query_count
@@ -282,7 +284,7 @@ class Evaluation():
 
 		DCG  = 0
 		for i,doc_ID in enumerate(k_predicted_docs) :
-			if doc in ground_truth_docs:
+			if doc_ID in ground_truth_docs:
 				idx = ground_truth_docs.index(doc_ID)
 				rel = ground_truth_relevance[idx]
 				ideal_rel_list.append([rel,i+1])
@@ -332,10 +334,10 @@ class Evaluation():
 
 		query_count = len(query_ids)
 
-		ground_truth_list = ground_truth__relevance_metrics(query_rels,query_ids)
+		ground_truth_list = ground_truth_relevance_metrics(qrels,query_ids)
 
 		for i,query_id in enumerate(query_ids):
-			NDCG = queryNDCG(doc_IDs_ordered[i], query_id, ground_truth_list[i], k)
+			NDCG = self.queryNDCG(doc_IDs_ordered[i], query_id, ground_truth_list[i], k)
 			meanNDCG += NDCG
 
 		meanNDCG = meanNDCG/query_count			
@@ -377,8 +379,10 @@ class Evaluation():
 			
 			if query_doc_IDs_ordered[i] in true_doc_IDs:
 				rel_ret_count += 1
-				avgPrecision += (rel_ret_count/doc_count)
-		avgPrecision = avgPrecision/rel_ret_count
+				if (doc_count):
+					avgPrecision += (rel_ret_count/doc_count)
+		if(rel_ret_count):
+			avgPrecision = avgPrecision/rel_ret_count
 		
 		return avgPrecision
 
@@ -416,7 +420,7 @@ class Evaluation():
 
 		for i,query_id in enumerate(query_ids):
 
-			avgPrecision = queryAveragePrecision(doc_IDs_ordered[i], query_id, ground_truth_list[i], k)
+			avgPrecision = self.queryAveragePrecision(doc_IDs_ordered[i], query_id, ground_truth_list[i], k)
 			meanAveragePrecision += avgPrecision
 
 		meanAveragePrecision = meanAveragePrecision/query_count
