@@ -84,8 +84,8 @@ class Evaluation():
 		# 		ground_truth_list[query_i].append(int(query_info["id"]))
 
 		for i,query_id in enumerate(query_ids):
-			if(i==0):
-				print(doc_IDs_ordered[i],"\n\n\n",ground_truth_list[i])
+			# if(i==0):
+			# 	print(doc_IDs_ordered[i],"\n\n\n",ground_truth_list[i])
 			precision = self.queryPrecision(doc_IDs_ordered[i],query_id,ground_truth_list[i],k)
 			meanPrecision += precision
 
