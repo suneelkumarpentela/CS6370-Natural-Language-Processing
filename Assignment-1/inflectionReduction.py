@@ -30,25 +30,28 @@ class InflectionReduction:
 		reducedText = []
 
 
+		##STEMMING
 
-		for sentence in text:
-			stem_sentence = []
-			for token in sentence:
-				word = token.lower()
-				word = ps.stem(word)
-				stem_sentence.append(word)
-			reducedText.append(stem_sentence)
+		# for sentence in text:
+		# 	stem_sentence = []
+		# 	for token in sentence:
+		# 		word = token.lower()
+		# 		word = ps.stem(word)
+		# 		stem_sentence.append(word)
+		# 	reducedText.append(stem_sentence)
 
 
-		# for i in range(len(text)):
-		# 	sentence = " ".join(text[i]) 
+		#LEMMATIZATION
+		
+		for i in range(len(text)):
+			sentence = " ".join(text[i]) 
 
-		# 	doc = nlp(sentence)
-		# 	lemma_word = []
+			doc = nlp(sentence)
+			lemma_word = []
 
-		# 	for word in doc:
-		# 		lemma_word.append(word.lemma_)
-		# 	reducedText.append(lemma_word)
+			for word in doc:
+				lemma_word.append(word.lemma_)
+			reducedText.append(lemma_word)
 
 		return reducedText
 

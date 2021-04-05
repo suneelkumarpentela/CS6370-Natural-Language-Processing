@@ -272,7 +272,7 @@ class Evaluation():
 			The nDCG value as a number between 0 and 1
 		"""
 
-		nDCG = -1
+		nDCG = 0
 
 		ground_truth_docs = true_doc_IDs[0]
 		ground_truth_relevance = true_doc_IDs[1]
@@ -289,18 +289,20 @@ class Evaluation():
 				rel = ground_truth_relevance[idx]
 				ideal_rel_list.append([rel,i+1])
 				DCG += rel/(np.log2(i+2))
-
-
-		ideal_rel_list = sorted(ideal_rel_list,key = lambda x : x[0])
+				
+		ideal_rel_list = sorted(ideal_rel_list,key = lambda x : x[0],reverse=True)
 		#Ideal DCG@k
 
+		if int(query_id)==1 :
+			print(ideal_rel_list)
 		IDCG = 0
 		for i in range(len(ideal_rel_list)):
 			rel = ideal_rel_list[i][0]
-			pos = ideal_rel_list[i][1]
+			pos = i+1
 			IDCG += ( rel/np.log2(pos+1) )
 			
-		nDCG = DCG/IDCG
+		if (IDCG):
+			nDCG = DCG/IDCG
 		
 		return nDCG
 
