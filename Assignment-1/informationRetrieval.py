@@ -2,8 +2,6 @@
 import numpy as np
 import math
 import pandas as pd
-# Add your import statements here
-
 
 class InformationRetrieval():
 
@@ -67,11 +65,10 @@ class InformationRetrieval():
 
 		TF = {}
 		inv_index = {}
-		#inv = {}
+
 		for docID in docIDs:
 			TF[docID] = [0 for i in range(dim)]
 			inv_index[docID] = [0 for i in range(dim)]
-			#inv[docID] = {}
 
 		for docID,doc in zip(docIDs,docs):
 			for sentence in doc:
@@ -85,15 +82,8 @@ class InformationRetrieval():
 			for idx,word in enumerate(terms): 
 				if (inv_index[docID][idx]==0) :
 					inv_index[docID][idx] = TF[docID][idx]* np.log( len(docIDs)/IDF[word] )
-					#inv[docID][word] = TF[docID][idx]* np.log( len(docIDs)/IDF[word] )
-		# print(np.array(TF[1])-np.array(TF[299]))
-		# print(np.array(TF[299]))
-		# print(len(TF[1]),len(inv_index[1]))
 
 		index["inv_index"] = inv_index
-
-		# inv = pd.DataFrame.from_dict(inv_index,orient='index',columns = terms)
-		# inv.to_csv("inv.csv",index=False)
 		
 		self.index = index
 
@@ -134,22 +124,12 @@ class InformationRetrieval():
 						idx = terms.index(word)
 						query_vectors[i][idx] += 1
 
-		# #test stunt
-		# print("query_1_test")
-		# q1t = []
-		# for i in range(len(query_vectors[0])):
-		# 	if(query_vectors[0][i] > 0):
-		# 		q1t.append(terms[i])
-
-		# print(q1t)
-
 		#computing cosine similarity for all queries with docs
 
 		for i,query in enumerate(queries):
 			query_vector = np.array(query_vectors[i])  
 			cos_sim_dict = {}
 
-			#######ref = np.array(inv_index[1])
 			for doc_ID in doc_IDs:
 				doc_vector = np.array(inv_index[doc_ID])
 
@@ -158,28 +138,13 @@ class InformationRetrieval():
 				else:
 					cos_sim = np.dot(query_vector,doc_vector)/(np.linalg.norm(doc_vector)*np.linalg.norm(query_vector))
 
-				#print(np.sum(ref-doc_vector))
-				# if (i==0):
-				# 	print(query_vector.shape)
-				# 	print(doc_vector.shape)
-				# 	print(cos_sim)
-				# 	return query_vector
 				cos_sim_dict[doc_ID] = cos_sim
-			# if (query == "1"):
-			# 	print(cos_sim_dict)
 
 			doc_ID_ordered = []
-			#sample = {}
-			for docID,val in sorted(cos_sim_dict.items(),key = lambda item : item[1],reverse = True):
-				doc_ID_ordered.append(int(docID))
-				#sample[docID] = val
 
-			# if (i==0):
-			# 	print(sample)
+			for docID,_ in sorted(cos_sim_dict.items(),key = lambda item : item[1],reverse = True):
+				doc_ID_ordered.append(int(docID))
 
 			doc_IDs_ordered.append(doc_ID_ordered)
-			# if(query == "1"):
-			# 	#print("suneel")
-			# 	print(doc_IDs_ordered)
 
 		return doc_IDs_ordered

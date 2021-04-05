@@ -168,12 +168,7 @@ class SearchEngine:
 		# Calculate precision, recall, f-score, MAP and nDCG for k = 1 to 10
 		
 		precisions, recalls, fscores, MAPs, nDCGs = [], [], [], [], []
-
-		# precision = self.evaluator.meanPrecision(
-		# 		doc_IDs_ordered, query_ids, qrels, 10)
-		# precisions.append(precision)
-		# print(precisions)
-
+		
 		for k in range(1, 11):
 			precision = self.evaluator.meanPrecision(
 				doc_IDs_ordered, query_ids, qrels, k)

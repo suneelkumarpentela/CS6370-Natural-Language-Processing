@@ -75,17 +75,7 @@ class Evaluation():
 		#imported from util.py
 		ground_truth_list = ground_truth_metrics(qrels,query_ids)
 
-		# ground_truth_list = [ [] for i in range(query_count)]
-
-		# for query_info in qrels:
-		# 	query_val = int(query_info["query_num"])
-		# 	if query_val in query_ids: 
-		# 		query_i = query_ids.index(query_val)
-		# 		ground_truth_list[query_i].append(int(query_info["id"]))
-
 		for i,query_id in enumerate(query_ids):
-			# if(i==0):
-			# 	print(doc_IDs_ordered[i],"\n\n\n",ground_truth_list[i])
 			precision = self.queryPrecision(doc_IDs_ordered[i],query_id,ground_truth_list[i],k)
 			meanPrecision += precision
 
@@ -164,10 +154,7 @@ class Evaluation():
 
 		ground_truth_list = ground_truth_metrics(qrels,query_ids)
 
-		#print(ground_truth_list)
-
 		for i,query_id in enumerate(query_ids):
-
 			recall = self.queryRecall(doc_IDs_ordered[i],query_id,ground_truth_list[i],k)
 			meanRecall += recall
 		
@@ -285,12 +272,13 @@ class Evaluation():
 		DCG  = 0
 		for i,doc_ID in enumerate(k_predicted_docs) :
 			if doc_ID in ground_truth_docs:
-				idx = ground_truth_docs.index(doc_ID)
+				idx = ground_truth_docs.index(doc_ID)		
 				rel = ground_truth_relevance[idx]
 				ideal_rel_list.append([rel,i+1])
 				DCG += rel/(np.log2(i+2))
-				
+
 		ideal_rel_list = sorted(ideal_rel_list,key = lambda x : x[0],reverse=True)
+		
 		#Ideal DCG@k
 
 		if int(query_id)==1 :
