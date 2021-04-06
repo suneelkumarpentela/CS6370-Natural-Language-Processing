@@ -281,8 +281,6 @@ class Evaluation():
 		
 		#Ideal DCG@k
 
-		if int(query_id)==1 :
-			print(ideal_rel_list)
 		IDCG = 0
 		for i in range(len(ideal_rel_list)):
 			rel = ideal_rel_list[i][0]
@@ -409,7 +407,6 @@ class Evaluation():
 		ground_truth_list = ground_truth_metrics(q_rels,query_ids)
 
 		for i,query_id in enumerate(query_ids):
-
 			avgPrecision = self.queryAveragePrecision(doc_IDs_ordered[i], query_id, ground_truth_list[i], k)
 			meanAveragePrecision += avgPrecision
 
