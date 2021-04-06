@@ -77,12 +77,15 @@ class InformationRetrieval():
 					idx = terms.index(word)
 					TF[docID][idx] += 1
 
+		for word,_ in IDF.items():
+			IDF[word] = np.log( len(docIDs)/IDF[word] )
 
 		for docID in docIDs:
 			for idx,word in enumerate(terms): 
 				if (inv_index[docID][idx]==0) :
-					inv_index[docID][idx] = TF[docID][idx]* np.log( len(docIDs)/IDF[word] )
+					inv_index[docID][idx] = TF[docID][idx]*IDF[word]
 
+		index["IDF"] = IDF
 		index["inv_index"] = inv_index
 		
 		self.index = index
@@ -109,6 +112,7 @@ class InformationRetrieval():
 		terms = self.index["terms"]
 		dim = self.index["dim"]
 		doc_IDs = self.index["docIDs"]
+		IDF = self.index["IDF"]
 		inv_index = self.index["inv_index"]
 
 		#zero_vector = [0 for i in range(dim)]
@@ -123,6 +127,13 @@ class InformationRetrieval():
 					if word in terms:
 						idx = terms.index(word)
 						query_vectors[i][idx] += 1
+
+		#multiplying query_vectors with IDF of the terms in it
+
+		for query_vector in query_vectors:
+			for i,word in enumerate(terms):
+				query_vector[i] = query_vector[i]*IDF[word]
+
 
 		#computing cosine similarity for all queries with docs
 
