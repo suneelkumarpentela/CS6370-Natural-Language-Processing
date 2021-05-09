@@ -2,6 +2,9 @@
 import numpy as np
 import math
 import pandas as pd
+from sklearn.decomposition import TruncatedSVD
+#import umap
+
 
 class InformationRetrieval():
 
@@ -42,6 +45,9 @@ class InformationRetrieval():
 						DF[word] = 0
 						IDF[word] = 0 
 
+		# print(f'len(terms) = {len(terms)}')
+		# print(f'len(docs) = {len(docs)}')
+
 		for doc in docs:
 			for sentence in doc:
 				for token in sentence:
@@ -60,6 +66,7 @@ class InformationRetrieval():
 		index["dim"] = dim
 		index["docIDs"] = docIDs
 
+		#print(f'index = {index}')
 
 		#Each list in TF is a vector representing a doc in terms space.
 
@@ -88,7 +95,76 @@ class InformationRetrieval():
 		index["IDF"] = IDF
 		index["inv_index"] = inv_index
 		
+		print(f'(len(list(inv_index.values())) = {len(list(inv_index.values()))}')
+		print(f'len(list(inv_index.values())[0]) = {len(list(inv_index.values())[0])}')
+		
+		#creating the 1400*6600 document-term matrix with tf-idf values. 
+		term_doc_matrix = np.array(list(inv_index.values()))
+		print(f'Shape of term_doc_matrix = {term_doc_matrix.shape}')
+		
+		k=200 #try different k values
+
+		svd_model = TruncatedSVD(n_components=k, algorithm='randomized', n_iter=50, random_state=122)
+		X_topics = svd_model.fit_transform(term_doc_matrix)
+
+		# for i,comp in enumerate(svd_model.components_):
+		# 	terms_comp = zip(terms,comp)
+		# 	sorted_terms = sorted(terms_comp, key= lambda x:x[1], reverse=True)[:10]
+		# 	print("Topic "+str(i)+": ")
+		# 	for t in sorted_terms:
+		# 		print(t[0])
+		# 		print(" ")
+
+		U = X_topics/ svd_model.singular_values_
+		print(f'Shape of U = {U.shape}')
+		Sigma_matrix = np.diag(svd_model.singular_values_)
+		print(f'Shape of Sigma_matrix = {Sigma_matrix.shape}')
+		VT = svd_model.components_
+		print(f'Shape of VT = {VT.shape}')
+
+		B= np.dot(np.dot(U,Sigma_matrix),VT)
+		print(f'Shape of B = {B.shape}')
+
+
+		#u,sigma,vt = np. linalg.svd(self.matrix)
+		#reconstructedMatrix= dot(dot(u,linalg.diagsvd(sigma,len(self.matrix),len(vt))),vt)
+
+		threshold = 0.7	
+		R = np.linalg.norm(term_doc_matrix-B, 'fro')/np.linalg.norm(term_doc_matrix, 'fro')
+		print(f'R = {R}')
+		
+
 		self.index = index
+
+	# def lsa(self, inv_index):
+	#     term_doc_matrix = np.array(list(inv_index.values()))
+	#     print(f'Shape of term_doc_matrix = {term_doc_matrix.shape}')
+
+	# 	# SVD represent documents and terms in vectors 
+	#     svd_model = TruncatedSVD(n_components=20, algorithm='randomized', n_iter=100, random_state=122)
+	#     X_topics = svd_model.fit(term_doc_matrix)
+
+	    # terms = vectorizer.get_feature_names()
+
+	    # for i,comp in enumerate(svd_model.components_):
+    	#     terms_comp = zip(terms,comp)
+    	#     sorted_terms = sorted(terms_comp, key= lambda x:x[1], reverse=True)[:7]
+    	#     print("Topic "+str(i)+": ")
+    	#     for t in sorted_terms:
+        # 	    print(t[0])
+        # 	    print(" ")
+
+	    # return X_topics
+	#     embedding = umap.UMAP(n_neighbors=150, min_dist=0.5, random_state=12).fit_transform(X_topics)
+
+	#     plt.figure(figsize=(7,5))
+	#     plt.scatter(embedding[:, 0], embedding[:, 1], c = dataset.target,
+	#     s = 10, # size
+	#     edgecolor='none'
+	#     )
+	#     plt.show()
+		
+
 
 	def rank(self, queries):
 		"""
