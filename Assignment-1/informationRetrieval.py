@@ -90,40 +90,14 @@ class InformationRetrieval():
 		terms = json.load(open("output/"+ "basis_terms.txt", 'r'))
 		docIDs = json.load(open("output/"+ "doc_IDs.txt", 'r'))
 
-
-		#####################################################################
-
-		#creating the 1400*6600 document-term matrix with tf-idf values. 
+		#creating the 1400*6600 document-term matrix with tf-idf values.
+		# string keys to int keys
+		inv_index = dict(zip(list(map(int,inv_index.keys())),inv_index.values()))
 		term_doc_matrix = np.array(list(inv_index.values()))
-		print(f'Shape of term_doc_matrix = {term_doc_matrix.shape}')
-		
-		k = 500 #try different k values
 
-		svd_model = TruncatedSVD(n_components=k, algorithm='randomized', n_iter=50, random_state=122)
-		X_topics = svd_model.fit_transform(term_doc_matrix)
+		k = 700
 
-		# for i,comp in enumerate(svd_model.components_):
-		# 	terms_comp = zip(terms,comp)
-		# 	sorted_terms = sorted(terms_comp, key= lambda x:x[1], reverse=True)[:10]
-		# 	print("Topic "+str(i)+": ")
-		# 	for t in sorted_terms:
-		# 		print(t[0])
-		# 		print(" ")
-
-		U = X_topics/ svd_model.singular_values_
-		print(f'Shape of U = {U.shape}')
-		Sigma_matrix = np.diag(svd_model.singular_values_)
-		print(f'Shape of Sigma_matrix = {Sigma_matrix.shape}')
-		VT = svd_model.components_
-		print(f'Shape of VT = {VT.shape}')
-
-		a = np.dot(np.dot(U,Sigma_matrix),VT)
-		print(f'Shape of B = {a.shape}')
-
-		inv_index = {idx+1 : a[idx] for idx in range(len(a))} 
-
-		#u,sigma,vt = np. linalg.svd(self.matrix)
-		#reconstructedMatrix= dot(dot(u,linalg.diagsvd(sigma,len(self.matrix),len(vt))),vt)
+		a = LSA(term_doc_matrix,k=1000)
 
 		threshold = 0.7	
 		R = np.linalg.norm(term_doc_matrix-a, 'fro')/np.linalg.norm(term_doc_matrix, 'fro')
@@ -161,8 +135,10 @@ class InformationRetrieval():
 		terms = self.index["terms"]
 		dim = len(terms)
 		doc_IDs = self.index["docIDs"]
+		doc_IDs = [int(doc_ID) for doc_ID in doc_IDs]
 		IDF = self.index["IDF"]
 		inv_index = self.index["inv_index"]
+		
 
 		#print(inv_index["2"])
 
