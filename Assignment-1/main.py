@@ -218,7 +218,7 @@ class SearchEngine:
 		plt.legend()
 		plt.title("Evaluation Metrics - Cranfield Dataset")
 		plt.xlabel("k")
-		plt.savefig(args.out_folder + "eval_plot_1000.png")
+		plt.savefig(args.out_folder + "eval_plot_cleaned.png")
 	
 		
 		

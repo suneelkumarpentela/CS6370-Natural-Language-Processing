@@ -31,53 +31,62 @@ class InformationRetrieval():
 		index = {}
 
 		#contains all the distinct terms present in all docs
-		# terms = []
-		# #dict with terms as keys with their IDF values
-		# IDF = {}
-		# DF = {}
+		
+		terms = []
+		#dict with terms as keys with their IDF values
+		IDF = {}
+		DF = {}
 
-		# for doc in docs:
-		# 	for sentence in doc:
-		# 		for word in sentence:
-		# 			if word not in terms:
-		# 				terms.append(word)
-		# 				DF[word] = 1
-		# 				IDF[word] = 0 
-		# 			else:
-		# 				DF[word] += 1
+		for doc in docs:
+			for sentence in doc:
+				for word in sentence:
+					if word not in terms:
+						terms.append(word)
+						DF[word] = 1
+						IDF[word] = 0 
+					else:
+						DF[word] += 1
 
-		# 	for word in DF.keys():
-		# 		if(DF[word] > 0):
-		# 			IDF[word] += 1
-		# 			DF[word] = 0		
+			for word in DF.keys():
+				if(DF[word] > 0):
+					IDF[word] += 1
+					DF[word] = 0		
 
-		# dim = len(terms)	
+		dim = len(terms)	
 
-		# #Each list in TF is a vector representing a doc in terms space.
+		#Each list in TF is a vector representing a doc in terms space.
 
-		# TF = {}
-		# inv_index = {}
+		TF = {}
+		inv_index = {}
 
-		# for docID in docIDs:
-		# 	TF[docID] = [0 for i in range(dim)]
-		# 	inv_index[docID] = [0 for i in range(dim)]
+		for docID in docIDs:
+			TF[docID] = [0 for i in range(dim)]
+			inv_index[docID] = [0 for i in range(dim)]
 
-		# for docID,doc in zip(docIDs,docs):
-		# 	for sentence in doc:
-		# 		for word in sentence:
-		# 			idx = terms.index(word)
-		# 			TF[docID][idx] += 1
+		for docID,doc in zip(docIDs,docs):
+			for sentence in doc:
+				for word in sentence:
+					idx = terms.index(word)
+					TF[docID][idx] += 1
 
-		# for word,_ in IDF.items():
-		# 	IDF[word] = np.log( len(docIDs)/IDF[word] )
+		for word,_ in IDF.items():
+			IDF[word] = np.log( len(docIDs)/IDF[word] )
 
-		# for docID in docIDs:
-		# 	idx=0
-		# 	for word in terms: 
-		# 		if (inv_index[docID][idx]==0) :
-		# 			inv_index[docID][idx] = TF[docID][idx]*IDF[word]
-		# 		idx += 1
+		for docID in docIDs:
+			idx=0
+			for word in terms: 
+				if (inv_index[docID][idx]==0) :
+					inv_index[docID][idx] = TF[docID][idx]*IDF[word]
+				idx += 1
 
+		# pd.DataFrame(inv_index).to_csv("inv.csv",index=False)
+		# pd.DataFrame(IDF).to_csv("idf.csv",index=False)
+		json.dump(inv_index, open("output/"+ "inv_index.json", 'w'))
+		json.dump(IDF, open("output/" + "idf.json", 'w'))
+		json.dump(terms, open("output/" + "basis_terms.txt", 'w'))
+		json.dump(docIDs, open("output/" + "doc_IDs.txt", 'w'))
+
+		'''
 		# ## pd.DataFrame(inv_index).to_csv("inv.csv",index=False)
 		# ## pd.DataFrame(IDF).to_csv("idf.csv",index=False)
 		# json.dump(inv_index, open("output/"+ "inv_index.json", 'w'))
@@ -98,12 +107,14 @@ class InformationRetrieval():
 		k = 700
 
 		a = LSA(term_doc_matrix,k=1000)
+		
 
 		threshold = 0.7	
 		R = np.linalg.norm(term_doc_matrix-a, 'fro')/np.linalg.norm(term_doc_matrix, 'fro')
 		print(f'R = {R}')
 
 		############################
+		'''
 
 		index["terms"] = terms
 		index["docIDs"] = docIDs
@@ -111,7 +122,9 @@ class InformationRetrieval():
 		index["IDF"] = IDF
 		index["inv_index"] = inv_index
 
+		print(dim)
 		self.index = index
+		
 		
 	def rank(self, queries):
 		"""

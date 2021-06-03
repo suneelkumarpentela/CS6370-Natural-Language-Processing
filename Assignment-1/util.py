@@ -3,10 +3,25 @@ import numpy as np
 import math
 import pandas as pd
 import json
+import re
+from plsa import Corpus, Pipeline
+from plsa.pipeline import DEFAULT_PIPELINE
+from plsa.algorithms import PLSA
 from sklearn.decomposition import TruncatedSVD
 
 
 # Add any utility functions here
+
+def clean_text(text):
+	text = text.lower()
+	text=re.sub('\w*\d\w*','', text)
+	text=re.sub('\n',' ',text)
+	text=re.sub(r"http\S+", "", text)
+	text=re.sub('[^a-z]',' ',text)
+	text=re.sub(' +',' ',text)
+	
+	return text
+
 def ground_truth_metrics(query_rels,query_ids):
     query_count = len(query_ids)
     query_ids = sorted(query_ids,key = lambda x : int(x))
@@ -103,8 +118,8 @@ def EditDistDP(str1, str2):
 	# to get row
 	return DP[len2 % 2][len1]
 
-def LSA(inv_index,k=600):
-	term_doc_matrix = np.array(list(inv_index.values()))
+def LSA(term_doc_matrix,k=600):
+	#term_doc_matrix = np.array(list(inv_index.values()))
 
 	svd_model = TruncatedSVD(n_components=k, algorithm='randomized', n_iter=50, random_state=122)
 	X_topics = svd_model.fit_transform(term_doc_matrix)
@@ -115,6 +130,37 @@ def LSA(inv_index,k=600):
 
 	b = np.dot(np.dot(U,Sigma_matrix),VT)
 	return b
+
+
+#def PLSA():
+	
+
+
+
+def plsa():
+	csv_file = "data/Full-Economic-News-DFE-839861.csv"
+
+	pipeline = Pipeline(*DEFAULT_PIPELINE)
+
+	corpus = Corpus.from_csv(csv_file, pipeline)
+
+	n_topics = 5
+	plsa = PLSA(corpus, n_topics, True)
+
+	result = plsa.fit()
+	result = plsa.best_of(5)
+
+	print(result.topic)
+
+	new_doc = 'Hello! This is the federal humpty dumpty agency for state funding.'
+
+	topic_components, number_of_new_words, new_words = result.predict(new_doc)
+
+	print('Relative topic importance in new document:', topic_components)
+	print('Number of previously unseen words in new document:', number_of_new_words)
+	print('Previously unseen words in new document:', new_words)
+
+	print(result.word_given_topic[0][:10])
 
 
 

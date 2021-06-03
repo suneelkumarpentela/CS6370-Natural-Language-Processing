@@ -274,15 +274,20 @@ class Evaluation():
 			if doc_ID in ground_truth_docs:
 				idx = ground_truth_docs.index(doc_ID)		
 				rel = ground_truth_relevance[idx]
-				ideal_rel_list.append([rel,i+1])
+				#ideal_rel_list.append([rel,i+1])
 				DCG += rel/(np.log2(i+2))
-
-		ideal_rel_list = sorted(ideal_rel_list,key = lambda x : x[0],reverse=True)
 		
 		#Ideal DCG@k
 
+		for doc_ID in query_doc_IDs_ordered:
+			if doc_ID in ground_truth_docs:
+				idx = ground_truth_docs.index(doc_ID)
+				ideal_rel_list.append([ground_truth_relevance[idx],ground_truth_docs[idx]])
+
+		ideal_rel_list = sorted(ideal_rel_list,key = lambda x : x[0],reverse=True)
+
 		IDCG = 0
-		for i in range(len(ideal_rel_list)):
+		for i in range(min(k,len(ideal_rel_list))):
 			rel = ideal_rel_list[i][0]
 			pos = i+1
 			IDCG += ( rel/np.log2(pos+1) )

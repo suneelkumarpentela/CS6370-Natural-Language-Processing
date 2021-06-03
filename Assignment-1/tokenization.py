@@ -52,7 +52,8 @@ class Tokenization():
 		tokenizer =  TreebankWordTokenizer()
 
 		for sentence in text:
-			tokens = tokenizer.tokenize(sentence.strip())
+			sent = clean_text(sentence)
+			tokens = tokenizer.tokenize(sent.strip())
 			tokens = [i.lower() for i in tokens if( (i.strip() != ".") and (i.strip() != ",") )]
 			tokenizedText.append(tokens)
 			
