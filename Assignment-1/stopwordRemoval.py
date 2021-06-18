@@ -1,11 +1,12 @@
 from util import *
 
 import nltk
+from nltk.corpus import wordnet
 from nltk.corpus import stopwords
 
 class StopwordRemoval():
 
-	def fromList(self, text):
+	def fromList(self, text,q=0):
 		"""
 		Sentence Segmentation using the Punkt Tokenizer
 
@@ -32,6 +33,22 @@ class StopwordRemoval():
 				if w not in stop_words:
 					filtered_sentence.append(w)
 			stopwordRemovedText.append(filtered_sentence)
+
+		if(q):
+			final_text = stopwordRemovedText.copy()
+			for i in stopwordRemovedText:
+				t = []
+				for j in i:
+					t.append(j)
+					k = 0
+					for syn in wordnet.synsets(j):
+						for l in syn.lemmas():
+							if(k<6):
+								if l.name() not in t:
+									t.append(l.name())
+									k+=1
+				final_text.append(t)
+
 		return stopwordRemovedText
 
 

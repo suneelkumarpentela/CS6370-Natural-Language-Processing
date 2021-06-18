@@ -30,6 +30,7 @@ class InformationRetrieval():
 
 		index = {}
 
+		'''
 		#contains all the distinct terms present in all docs
 		
 		terms = []
@@ -79,20 +80,16 @@ class InformationRetrieval():
 					inv_index[docID][idx] = TF[docID][idx]*IDF[word]
 				idx += 1
 
-		# pd.DataFrame(inv_index).to_csv("inv.csv",index=False)
-		# pd.DataFrame(IDF).to_csv("idf.csv",index=False)
+				
+		
+		## pd.DataFrame(inv_index).to_csv("inv.csv",index=False)
+		## pd.DataFrame(IDF).to_csv("idf.csv",index=False)
+		
 		json.dump(inv_index, open("output/"+ "inv_index.json", 'w'))
 		json.dump(IDF, open("output/" + "idf.json", 'w'))
 		json.dump(terms, open("output/" + "basis_terms.txt", 'w'))
 		json.dump(docIDs, open("output/" + "doc_IDs.txt", 'w'))
-
 		'''
-		# ## pd.DataFrame(inv_index).to_csv("inv.csv",index=False)
-		# ## pd.DataFrame(IDF).to_csv("idf.csv",index=False)
-		# json.dump(inv_index, open("output/"+ "inv_index.json", 'w'))
-		# json.dump(IDF, open("output/" + "idf.json", 'w'))
-		# json.dump(terms, open("output/" + "basis_terms.txt", 'w'))
-		# json.dump(docIDs, open("output/" + "doc_IDs.txt", 'w'))
 
 		inv_index = json.load(open("output/"+ "inv_index.json", 'r'))
 		IDF = json.load(open("output/"+ "idf.json", 'r'))
@@ -104,17 +101,15 @@ class InformationRetrieval():
 		inv_index = dict(zip(list(map(int,inv_index.keys())),inv_index.values()))
 		term_doc_matrix = np.array(list(inv_index.values()))
 
-		k = 700
+		k = 1100
 
-		a = LSA(term_doc_matrix,k=1000)
+		a = LSA(term_doc_matrix,k)
 		
-
-		threshold = 0.7	
 		R = np.linalg.norm(term_doc_matrix-a, 'fro')/np.linalg.norm(term_doc_matrix, 'fro')
 		print(f'R = {R}')
-
+		
 		############################
-		'''
+	
 
 		index["terms"] = terms
 		index["docIDs"] = docIDs
@@ -122,7 +117,7 @@ class InformationRetrieval():
 		index["IDF"] = IDF
 		index["inv_index"] = inv_index
 
-		print(dim)
+		#print(dim)
 		self.index = index
 		
 		

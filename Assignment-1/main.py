@@ -62,11 +62,11 @@ class SearchEngine:
 		"""
 		return self.inflectionReducer.reduce(text)
 
-	def removeStopwords(self, text):
+	def removeStopwords(self, text,q=0):
 		"""
 		Call the required stopword remover
 		"""
-		return self.stopwordRemover.fromList(text)
+		return self.stopwordRemover.fromList(text,q)
 
 
 	def preprocessQueries(self, queries):
@@ -95,7 +95,7 @@ class SearchEngine:
 		# Remove stopwords from queries
 		stopwordRemovedQueries = []
 		for query in reducedQueries:
-			stopwordRemovedQuery = self.removeStopwords(query)
+			stopwordRemovedQuery = self.removeStopwords(query,1)
 			stopwordRemovedQueries.append(stopwordRemovedQuery)
 		json.dump(stopwordRemovedQueries, open(self.args.out_folder + "stopword_removed_queries.txt", 'w'))
 
@@ -169,20 +169,6 @@ class SearchEngine:
 
 		query_ids = sorted(query_ids)
 
-		#imported from util.py
-		# ground_truth_list = ground_truth_metrics(qrels,query_ids)
-		# f = open(self.args.out_folder +"test_qrels.txt","a") 
-		# for i,query_id in enumerate(query_ids):
-		# 	f.write("Query {}\n".format(str(query_id)))
-		# 	#####precision = self.queryPrecision(doc_IDs_ordered[i],query_id,ground_truth_list[i],k)
-		# 	a = [str(id) for id in ground_truth_list[i]] 
-		# 	s1 = ",".join( a )
-		# 	f.write(s1+"\n")
-		# 	b = [str(id) for id in doc_IDs_ordered[i][:len(ground_truth_list[i])] ]
-		# 	s2 = ",".join(b)
-		# 	f.write(s2+"\n")
-		# f.close()
-
 		# Calculate precision, recall, f-score, MAP and nDCG for k = 1 to 10
 		
 		precisions, recalls, fscores, MAPs, nDCGs = [], [], [], [], []
@@ -210,6 +196,7 @@ class SearchEngine:
 				str(k) + " : " + str(MAP) + ", " + str(nDCG))
 
 		# Plot the metrics and save plot 
+		plt.figure()
 		plt.plot(range(1, 11), precisions, label="Precision")
 		plt.plot(range(1, 11), recalls, label="Recall")
 		plt.plot(range(1, 11), fscores, label="F-Score")
@@ -218,10 +205,13 @@ class SearchEngine:
 		plt.legend()
 		plt.title("Evaluation Metrics - Cranfield Dataset")
 		plt.xlabel("k")
-		plt.savefig(args.out_folder + "eval_plot_cleaned.png")
+		plt.savefig(args.out_folder + "eval_plot_1100.png")
+		plt.show()
+
+		#json.dump(stopwordRemovedDocs, open(self.args.out_folder + "PvsR.txt", 'w'))
+		print("Precisions:",precisions)
+		print("Recall:",recalls)
 	
-		
-		
 	def handleCustomQuery(self):
 		"""
 		Take a custom query as input and return top five relevant documents
